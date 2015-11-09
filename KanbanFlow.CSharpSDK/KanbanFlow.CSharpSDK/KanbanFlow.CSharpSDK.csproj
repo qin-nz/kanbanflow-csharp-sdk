@@ -45,11 +45,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Board.cs" />
-    <Compile Include="Column.cs" />
+    <Compile Include="Cell.cs" />
+    <Compile Include="Comment.cs" />
+    <Compile Include="Internal\GetBoardResponse.cs" />
+    <Compile Include="Internal\CreateTaskResponse.cs" />
     <Compile Include="KanbanFlowClient.cs" />
     <Compile Include="Label.cs" />
+    <Compile Include="Number.cs" />
     <Compile Include="SubTask.cs" />
-    <Compile Include="Swimlane.cs" />
     <Compile Include="Task.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="User.cs" />

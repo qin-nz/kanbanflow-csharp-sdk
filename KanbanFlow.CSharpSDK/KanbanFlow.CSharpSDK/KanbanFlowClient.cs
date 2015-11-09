@@ -1,7 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using KanbanFlow.CSharpSDK.Internal;
+using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -9,36 +8,58 @@ using System.Threading.Tasks;
 
 namespace KanbanFlow.CSharpSDK
 {
-    public class KanbanFlowClient
+    public class KanbanFlowClient : HttpClient
     {
-        HttpClient client;
-        public KanbanFlowClient(string apiToken)
+
+        public KanbanFlowClient(string apiToken, string baseAddress = "https://kanbanflow.com/api/v1/")
         {
             if (string.IsNullOrWhiteSpace(apiToken))
             {
                 throw new ArgumentNullException(nameof(apiToken));
             }
-            client = new HttpClient();
             string base64 = Convert.ToBase64String(Encoding.UTF8.GetBytes("apiToken:" + apiToken));
-            client.BaseAddress = new Uri("https://kanbanflow.com/api/v1/");
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", base64);
+            BaseAddress = new Uri(baseAddress);
+            DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", base64);
         }
 
-        public async Task<Board> GetBoard()
+       static Board board;
+        public Board GetBoard()
         {
-            var body = await client.GetStringAsync("board");
-            return JsonConvert.DeserializeObject<Board>(body);
-        }
-
-        public async Task<User[]> GetUsers()
-        {
-            var body = await client.GetStringAsync("users");
-            return JsonConvert.DeserializeObject<User[]>(body);
-        }
-
-        public async Task<Task> GetTask(string id)
-        {
-            throw new NotImplementedException();
+            //TODO: 处理并发
+            if (board !=null)
+            {
+                return board;
+            }
+            board = new Board(this);
+            Parallel.Invoke(
+ async () =>
+             {
+                 var body = await GetStringAsync("board");
+                 var boardResponse = JsonConvert.DeserializeObject<GetBoardResponse>(body);
+                 board.Id = boardResponse.Id;
+                 board.Name = boardResponse.Name;
+             },
+ async () =>
+             {
+                 var body = await GetStringAsync("users");
+                 var users = JsonConvert.DeserializeObject<User[]>(body);
+                 board.Users = users;
+             },
+                async () =>
+                {
+                    var body = await GetStringAsync("tasks");
+                    var cells = JsonConvert.DeserializeObject<Cell[]>(body);
+                    foreach (var cell in cells)
+                    {
+                        foreach (var task in cell.Tasks)
+                        {
+                            task.BoradClient = this;
+                        }
+                    }
+                    board.Cells = cells;
+                }
+         );
+            return board;
         }
     }
 }

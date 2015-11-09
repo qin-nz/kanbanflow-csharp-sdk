@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Newtonsoft.Json;
 
 namespace KanbanFlow.CSharpSDK
 {
    public class Label
     {
+        [JsonProperty("name")]
         public string Name { get; set; }
+        [JsonProperty("pinned")]
         public bool Pinned { get; set; }
     }
 }
