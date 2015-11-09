@@ -13,7 +13,7 @@ namespace KanbanFlow.CSharpSDK
         [JsonIgnore]
         internal KanbanFlowClient BoradClient { get; set; }
 
-        [JsonProperty("_id")]
+        [JsonIgnore]
         public string Id { get; set; }
 
         [JsonProperty("name")]
@@ -101,7 +101,7 @@ namespace KanbanFlow.CSharpSDK
 
         public async System.Threading.Tasks.Task UpdateAsync()
         {
-            if (Id==null)
+            if (Id == null)
             {
                 throw new NotSupportedException("Please first create this task.");
             }
