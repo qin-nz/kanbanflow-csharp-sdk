@@ -30,7 +30,7 @@ namespace KanbanFlow.CSharpSDK
             board.Id = boardResponse.Id;
             board.Name = boardResponse.Name;
             board.Users = await GetUsers();
-            board.Cells = await GetAllTasks();
+            board.Cells = await GetAllTasks(board);
             return board;
         }
 
@@ -47,7 +47,7 @@ namespace KanbanFlow.CSharpSDK
             return JsonConvert.DeserializeObject<User[]>(body);
         }
 
-        private async Task<Cell[]> GetAllTasks()
+        private async Task<Cell[]> GetAllTasks(Board board)
         {
             var body = await GetStringAsync("tasks");
             var cells = JsonConvert.DeserializeObject<Cell[]>(body);
@@ -55,6 +55,7 @@ namespace KanbanFlow.CSharpSDK
             {
                 foreach (var task in cell.Tasks)
                 {
+                    task.Board = board;
                     task.BoradClient = this;
                 }
             }

@@ -14,6 +14,9 @@ namespace KanbanFlow.CSharpSDK
         internal KanbanFlowClient BoradClient { get; set; }
 
         [JsonIgnore]
+        internal Board Board { get; set; }
+
+        [JsonIgnore]
         public string Id { get; set; }
 
         [JsonProperty("name")]
@@ -44,9 +47,13 @@ namespace KanbanFlow.CSharpSDK
         public int TotalSecondsSpent { get; set; }
 
         [JsonIgnore]
-        public List<SubTask> SubTasks { get; set; }
+        public List<SubTask> SubTasks => _subTasks ?? (_subTasks = GetSubtasks());
+        private List<SubTask> _subTasks;
+
         [JsonIgnore]
-        public List<Label> Labels { get; set; }
+        public List<Label> Labels => _labels ?? (_labels = GetLabels());
+        private List<Label> _labels;
+
         [JsonIgnore]
         public object Collaborators { get; set; }
         [JsonIgnore]
@@ -54,17 +61,19 @@ namespace KanbanFlow.CSharpSDK
         [JsonIgnore]
         public object Dates { get; set; }
 
-        private async System.Threading.Tasks.Task GetSubtasksAsync()
+        private List<SubTask> GetSubtasks()
         {
-            var content = await BoradClient.GetStringAsync($"tasks/{Id}/subtasks");
-            SubTasks = JsonConvert.DeserializeObject<SubTask[]>(content).ToList();
+            var task = BoradClient.GetStringAsync($"tasks/{Id}/subtasks");
+            task.Wait();
+            var content = task.Result;
+            return JsonConvert.DeserializeObject<SubTask[]>(content).ToList();
         }
 
         public async System.Threading.Tasks.Task CreateSubtaskAsync(string name, bool finished = false)
         {
-            if (SubTasks == null)
+            if (_subTasks == null)
             {
-                await GetSubtasksAsync();
+                _subTasks = GetSubtasks();
             }
             SubTask subtask = new SubTask { Parent = this, Name = name, Finished = finished };
             var str = JsonConvert.SerializeObject(subtask);
@@ -76,17 +85,20 @@ namespace KanbanFlow.CSharpSDK
                 SubTasks.Add(subtask);
             }
         }
-        private async System.Threading.Tasks.Task GetLabelsAsync()
+        private List<Label> GetLabels()
         {
-            var content = await BoradClient.GetStringAsync($"tasks/{Id}/labels");
-            Labels = JsonConvert.DeserializeObject<Label[]>(content).ToList();
+
+            var task = BoradClient.GetStringAsync($"tasks/{Id}/labels");
+            task.Wait();
+            var content = task.Result;
+            return JsonConvert.DeserializeObject<Label[]>(content).ToList();
         }
 
         public async System.Threading.Tasks.Task CreateLabelAsync(string name, bool pinned = false)
         {
-            if (Labels == null)
+            if (_labels == null)
             {
-                await GetLabelsAsync();
+                _labels = GetLabels();
             }
             Label label = new Label { Name = name, Pinned = pinned };
             var str = JsonConvert.SerializeObject(label);
@@ -101,12 +113,26 @@ namespace KanbanFlow.CSharpSDK
 
         public async System.Threading.Tasks.Task UpdateAsync()
         {
-            if (Id == null)
+            if (Board == null)
             {
                 throw new NotSupportedException("Please first create this task.");
             }
             var str = JsonConvert.SerializeObject(this);
             await BoradClient.PostAsync($"tasks/{Id}", new StringContent(str, Encoding.UTF8, "application/json"));
+        }
+
+        public async System.Threading.Tasks.Task CreateOrUpdateDateAsync(DateTimeOffset time, string targetColumnId, string status = "active", string dateType = "dueDate")
+        {
+            Date date = new Date
+            {
+                DateType = dateType,
+                Status = status,
+                DueTimestamp = time.ToUniversalTime().ToString("O"),
+                DueTimestampLocal = time.ToString("O"),
+                TargetColumnId = targetColumnId
+            };
+            var str = JsonConvert.SerializeObject(date);
+            await BoradClient.PostAsync($"tasks/{Id}/dates", new StringContent(str, Encoding.UTF8, "application/json"));
         }
     }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using KanbanFlow.CSharpSDK.Internal;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -9,32 +10,63 @@ namespace KanbanFlow.CSharpSDK.UnitTest
     public class KanbanFlowTest
     {
         public static string apiToken = "";
-        Board _board;
-        [TestInitialize]
-        public void InitializeGetBoard()
+        static  Board _board;
+        static Task _testTask;
+        [ClassInitialize]
+        public static void InitializeGetBoard(TestContext context)
         {
             KanbanFlowClient account = new KanbanFlowClient(apiToken);
-            var task = account.GetBoardAsync();
-            task.Wait();
-            _board = task.Result;
+            var t0 = account.GetBoardAsync();
+            t0.Wait();
+            _board = t0.Result;
+            var t1 = CreateTask();
+            t1.Wait();
+            _testTask = t1.Result;
         }
-        [TestMethod]
-        public void CheckBoard()
+        private static async Task<Task> CreateTask()
         {
-            Assert.IsNotNull(_board.Name);
-            Assert.IsNotNull(_board.Users);
-        }
-
-        [TestMethod]
-        public async System.Threading.Tasks.Task CreateTask()
-        {
-            await _board.CreateTaskAsync(new Task
+            return await _board.CreateTaskAsync(new Task
             {
                 Name = "中文测试",
                 Description = "test Chinese",
                 ColumnId = _board.Cells[0].ColumnId,
                 SwimlaneId = _board.Cells[0].SwimlaneId
             });
+        }
+
+        [TestMethod]
+        public void CheckBoard()
+        {
+            Assert.IsNotNull(_board.Name);
+            Assert.IsNotNull(_board.Cells);
+            Assert.IsNotNull(_board.Users);
+        }
+
+
+
+        [TestMethod]
+        public async System.Threading.Tasks.Task CreatSubtasks()
+        {
+            await _testTask.CreateSubtaskAsync("子任务", true);
+        }
+
+
+        [TestMethod]
+        public async System.Threading.Tasks.Task CreateDate()
+        {
+            await _testTask.CreateOrUpdateDateAsync(DateTimeOffset.Now.AddDays(1.3), _board.Cells.Last().ColumnId);
+        }
+
+        [TestMethod]
+        public async System.Threading.Tasks.Task UpdateDate()
+        {
+            await _testTask.CreateOrUpdateDateAsync(DateTimeOffset.Now.AddDays(10), _board.Cells.Last().ColumnId);
+        }
+
+        [TestMethod]
+        public async System.Threading.Tasks.Task MoveTask()
+        {
+            await _board.MoveTaskAsync(_testTask, _board.Cells[3].ColumnId, _board.Cells[0].SwimlaneId);
         }
     }
 }

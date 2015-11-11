@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<OrderedTest name="orderedtest1" storage="c:\users\dingyuan\source\qin-nz\kanbanflow-csharp-sdk\kanbanflow.csharpsdk\kanbanflow.csharpsdk.unittest\orderedtest1.orderedtest" id="aba779df-08b9-4165-a745-25384041d936" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <TestLinks>
+    <TestLink id="dd6ab5e3-9173-a6e4-fc48-231afa6fcdac" name="CheckBoard" storage="bin\debug\kanbanflow.csharpsdk.unittest.dll" type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <TestLink id="0188af96-3151-a4a8-155b-1bf063dac26e" name="CreatSubtasks" storage="bin\debug\kanbanflow.csharpsdk.unittest.dll" type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <TestLink id="8ab7d9d4-7633-3973-defb-8216469e3ef5" name="CreateDate" storage="bin\debug\kanbanflow.csharpsdk.unittest.dll" type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <TestLink id="772083f2-d51b-a66c-b601-9ae4c170591e" name="UpdateDate" storage="bin\debug\kanbanflow.csharpsdk.unittest.dll" type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <TestLink id="f165309f-420a-8cbe-1b78-a6fb3689e9b3" name="MoveTask" storage="bin\debug\kanbanflow.csharpsdk.unittest.dll" type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  </TestLinks>
+</OrderedTest>

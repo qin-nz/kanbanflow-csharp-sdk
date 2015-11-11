@@ -47,6 +47,7 @@
     <Compile Include="Board.cs" />
     <Compile Include="Cell.cs" />
     <Compile Include="Comment.cs" />
+    <Compile Include="Date.cs" />
     <Compile Include="Internal\GetBoardResponse.cs" />
     <Compile Include="Internal\CreateTaskResponse.cs" />
     <Compile Include="KanbanFlowClient.cs" />
