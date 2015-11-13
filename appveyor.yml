@@ -1,2 +1,9 @@
+version: 0.2.{build}
+pull_requests:
+  do_not_increment_build_number: true
+build:
+  project: .\KanbanFlow.CSharpSDK\KanbanFlow.CSharpSDK
+  verbosity: normal
+test: off
 before_build:
-  - nuget restore
+  - nuget restore C:\projects\kanbanflow-csharp-sdk\KanbanFlow.CSharpSDK
