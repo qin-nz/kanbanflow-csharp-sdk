@@ -47,7 +47,7 @@ namespace KanbanFlow.CSharpSDK
             return JsonConvert.DeserializeObject<User[]>(body);
         }
 
-        private async Task<Cell[]> GetAllTasks(Board board)
+        internal async Task<Cell[]> GetAllTasks(Board board)
         {
             var body = await GetStringAsync("tasks");
             var cells = JsonConvert.DeserializeObject<Cell[]>(body);
