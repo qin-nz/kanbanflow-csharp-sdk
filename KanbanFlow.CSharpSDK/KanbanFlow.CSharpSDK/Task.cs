@@ -59,7 +59,7 @@ namespace KanbanFlow.CSharpSDK
         [JsonIgnore]
         public object Comments { get; set; }
         [JsonIgnore]
-        public object Dates { get; set; }
+        public List<Date> Dates { get; set; }
 
         private List<SubTask> GetSubtasks()
         {
@@ -111,6 +111,10 @@ namespace KanbanFlow.CSharpSDK
             }
         }
 
+        /// <summary>
+        /// Update Task Information, but NOT include Labels,Collaborators,Comments,Dates.
+        /// </summary>
+        /// <returns></returns>
         public async System.Threading.Tasks.Task UpdateAsync()
         {
             if (Board == null)
@@ -134,6 +138,7 @@ namespace KanbanFlow.CSharpSDK
             var str = JsonConvert.SerializeObject(date);
             await BoradClient.PostAsync($"tasks/{Id}/dates", new StringContent(str, Encoding.UTF8, "application/json"));
         }
+        
     }
 
     public class CreateSubtaskResponse

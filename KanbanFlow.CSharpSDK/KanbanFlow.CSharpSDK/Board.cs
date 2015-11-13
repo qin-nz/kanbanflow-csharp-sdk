@@ -75,5 +75,18 @@ namespace KanbanFlow.CSharpSDK
             }
             await MoveTaskAsync(task, destinationCell);
         }
+
+        public async System.Threading.Tasks.Task DeleteTaskAsync(Task task)
+        {
+            Cell cell = Cells.FirstOrDefault(c => c.Tasks.Contains(task));
+            await _client.DeleteAsync($"tasks/{task.Id}");
+            cell?.Tasks.Remove(task);
+        }
+
+        public async System.Threading.Tasks.Task RefreshTasks()
+        {
+            var cells = await _client.GetAllTasks(this);
+            Cells = cells;
+        }
     }
 }

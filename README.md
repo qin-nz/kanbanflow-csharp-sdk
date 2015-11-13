@@ -1,4 +1,4 @@
-# kanbanflow-csharp-sdk
+# KanbanFlow C# SDK
 A third party SDK of https://kanbanflow.com
 
 # Instructions

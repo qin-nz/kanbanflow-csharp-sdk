@@ -9,13 +9,13 @@ namespace KanbanFlow.CSharpSDK.UnitTest
     [TestClass]
     public class KanbanFlowTest
     {
-        public static string apiToken = "";
-        static  Board _board;
-        static Task _testTask;
+        public static string ApiToken = "";
+        private static Board _board;
+        private static Task _testTask;
         [ClassInitialize]
         public static void InitializeGetBoard(TestContext context)
         {
-            KanbanFlowClient account = new KanbanFlowClient(apiToken);
+            KanbanFlowClient account = new KanbanFlowClient(ApiToken);
             var t0 = account.GetBoardAsync();
             t0.Wait();
             _board = t0.Result;
@@ -50,6 +50,12 @@ namespace KanbanFlow.CSharpSDK.UnitTest
             await _testTask.CreateSubtaskAsync("子任务", true);
         }
 
+        [TestMethod]
+        public void GetSubtask()
+        {
+            var subtasks = _testTask.SubTasks;
+            Assert.AreEqual("子任务", subtasks[0].Name);
+        }
 
         [TestMethod]
         public async System.Threading.Tasks.Task CreateDate()
@@ -67,6 +73,12 @@ namespace KanbanFlow.CSharpSDK.UnitTest
         public async System.Threading.Tasks.Task MoveTask()
         {
             await _board.MoveTaskAsync(_testTask, _board.Cells[3].ColumnId, _board.Cells[0].SwimlaneId);
+        }
+
+        [TestMethod]
+        public async System.Threading.Tasks.Task DeleteTask()
+        {
+            await _board.DeleteTaskAsync(_testTask);
         }
     }
 }
