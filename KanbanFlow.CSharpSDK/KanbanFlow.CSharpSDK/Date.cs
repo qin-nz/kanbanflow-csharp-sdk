@@ -21,12 +21,44 @@ namespace KanbanFlow.CSharpSDK
 
 
         [JsonProperty("dueTimestamp", Required = Required.AllowNull)]
-        public string DueTimestamp { get; set; }
+        public string DueTimestampString
+        {
+            get
+            {
+                return DueTimestamp.ToUniversalTime().ToString("yyyy-MM-ddThh:mm:ssZ");
+            }
+            set
+            {
+                DueTimestamp = DateTimeOffset.Parse(value).ToLocalTime();
+            }
+        }
 
+        [JsonProperty("dueTimestampLocal", Required = Required.Default)]
+        public string DueTimestampLocalString
+        {
+            get
+            {
+                var time = DueTimestamp.ToLocalTime();
+                var date = time.ToString("yyyy-MM-ddThh:mm:ss");
+                string offset = "";
+                if (time.Offset.Hours >= 0)
+                {
+                    offset = $"+{time.Offset.Hours.ToString("D2")}:{time.Offset.Minutes.ToString("D2")}";
+                }
+                else if (time.Offset.Hours < 0)
+                {
+                    offset = $"{time.Offset.Hours.ToString("D2")}:{time.Offset.Minutes.ToString("D2")}";
+                }
+                return date + offset;
+            }
+            set
+            {
+                DueTimestamp = DateTimeOffset.Parse(value).ToLocalTime();
+            }
+        }
 
-        [JsonProperty("dueTimestampLocal")]
-        public string DueTimestampLocal { get; set; }
-
+        [JsonIgnore]
+        public DateTimeOffset DueTimestamp { get; set; }
 
         [JsonProperty("targetColumnId", Required = Required.Always)]
         public string TargetColumnId { get; set; }

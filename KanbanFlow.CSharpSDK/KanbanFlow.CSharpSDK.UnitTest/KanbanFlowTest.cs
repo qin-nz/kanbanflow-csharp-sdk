@@ -51,9 +51,9 @@ namespace KanbanFlow.CSharpSDK.UnitTest
         }
 
         [TestMethod]
-        public void GetSubtask()
+        public async void GetSubtask()
         {
-            var subtasks = _testTask.SubTasks;
+            var subtasks = await _testTask.GetSubtasksAsync();
             Assert.AreEqual("子任务", subtasks[0].Name);
         }
 
@@ -61,6 +61,14 @@ namespace KanbanFlow.CSharpSDK.UnitTest
         public async System.Threading.Tasks.Task CreateDate()
         {
             await _testTask.CreateOrUpdateDateAsync(DateTimeOffset.Now.AddDays(1.3), _board.Cells.Last().ColumnId);
+        }
+
+        [TestMethod]
+        public async System.Threading.Tasks.Task GetDate()
+        {
+            var dates = await _testTask.GetDateAsync();
+            Assert.IsNotNull(dates);
+            Assert.IsTrue(dates.Length > 0);
         }
 
         [TestMethod]

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace KanbanFlow.CSharpSDK
 {
@@ -22,22 +23,22 @@ namespace KanbanFlow.CSharpSDK
         [JsonProperty("name")]
         public string Name { get; set; }
 
-        [JsonProperty("description")]
+        [JsonProperty("description", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string Description { get; set; }
 
-        [JsonProperty("color")]
+        [JsonProperty("color", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string Color { get; set; }
 
         [JsonProperty("columnId")]
         public string ColumnId { get; set; }
 
-        [JsonProperty("swimlaneId")]
+        [JsonProperty("swimlaneId", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string SwimlaneId { get; set; }
 
-        [JsonProperty("number")]
+        [JsonProperty("number", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public Number? Number { get; set; }
 
-        [JsonProperty("responsibleUserId")]
+        [JsonProperty("responsibleUserId", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string ResponsibleUserId { get; set; }
 
         [JsonProperty("totalSecondsEstimate")]
@@ -46,69 +47,43 @@ namespace KanbanFlow.CSharpSDK
         [JsonProperty("totalSecondsSpent")]
         public int TotalSecondsSpent { get; set; }
 
-        [JsonIgnore]
-        public List<SubTask> SubTasks => _subTasks ?? (_subTasks = GetSubtasks());
-        private List<SubTask> _subTasks;
 
         [JsonIgnore]
-        public List<Label> Labels => _labels ?? (_labels = GetLabels());
-        private List<Label> _labels;
+        private object Collaborators { get; set; } = new List<object>();
+        [JsonIgnore]
+        private object Comments { get; set; } = new List<object>();
 
-        [JsonIgnore]
-        public object Collaborators { get; set; }
-        [JsonIgnore]
-        public object Comments { get; set; }
-        [JsonIgnore]
-        public List<Date> Dates { get; set; }
 
-        private List<SubTask> GetSubtasks()
+        public async Task<SubTask[]> GetSubtasksAsync()
         {
-            var task = BoradClient.GetStringAsync($"tasks/{Id}/subtasks");
-            task.Wait();
-            var content = task.Result;
-            return JsonConvert.DeserializeObject<SubTask[]>(content).ToList();
+            var content = await BoradClient.GetStringAsync($"tasks/{Id}/subtasks");
+            return JsonConvert.DeserializeObject<SubTask[]>(content);
         }
 
         public async System.Threading.Tasks.Task CreateSubtaskAsync(string name, bool finished = false)
         {
-            if (_subTasks == null)
+            SubTask subtask = new SubTask
             {
-                _subTasks = GetSubtasks();
-            }
-            SubTask subtask = new SubTask { Parent = this, Name = name, Finished = finished };
+                Parent = this,
+                Name = name,
+                Finished = finished
+            };
             var str = JsonConvert.SerializeObject(subtask);
             var res = await BoradClient.PostAsync($"tasks/{Id}/subtasks", new StringContent(str, Encoding.UTF8, "application/json"));
-            if (res.StatusCode == HttpStatusCode.OK)
-            {
-                var content = await res.Content.ReadAsStringAsync();
-                JsonConvert.DeserializeObject(content);
-                SubTasks.Add(subtask);
-            }
+            res.EnsureSuccessStatusCode();
         }
-        private List<Label> GetLabels()
+        public async Task<Label[]> GetLabelsAsync()
         {
-
-            var task = BoradClient.GetStringAsync($"tasks/{Id}/labels");
-            task.Wait();
-            var content = task.Result;
-            return JsonConvert.DeserializeObject<Label[]>(content).ToList();
+            var content = await BoradClient.GetStringAsync($"tasks/{Id}/labels");
+            return JsonConvert.DeserializeObject<Label[]>(content);
         }
 
         public async System.Threading.Tasks.Task CreateLabelAsync(string name, bool pinned = false)
         {
-            if (_labels == null)
-            {
-                _labels = GetLabels();
-            }
             Label label = new Label { Name = name, Pinned = pinned };
             var str = JsonConvert.SerializeObject(label);
             var res = await BoradClient.PostAsync($"tasks/{Id}/labels", new StringContent(str, Encoding.UTF8, "application/json"));
-            if (res.StatusCode == HttpStatusCode.OK)
-            {
-                var content = await res.Content.ReadAsStringAsync();
-                JsonConvert.DeserializeObject(content);
-                Labels.Add(label);
-            }
+            res.EnsureSuccessStatusCode();
         }
 
         /// <summary>
@@ -125,20 +100,26 @@ namespace KanbanFlow.CSharpSDK
             await BoradClient.PostAsync($"tasks/{Id}", new StringContent(str, Encoding.UTF8, "application/json"));
         }
 
+        public async Task<Date[]> GetDateAsync()
+        {
+            var content = await BoradClient.GetStringAsync($"tasks/{Id}/dates");
+            return JsonConvert.DeserializeObject<Date[]>(content);
+        }
+
         public async System.Threading.Tasks.Task CreateOrUpdateDateAsync(DateTimeOffset time, string targetColumnId, string status = "active", string dateType = "dueDate")
         {
             Date date = new Date
             {
                 DateType = dateType,
                 Status = status,
-                DueTimestamp = time.ToUniversalTime().ToString("O"),
-                DueTimestampLocal = time.ToString("O"),
+                DueTimestamp = time,
                 TargetColumnId = targetColumnId
             };
             var str = JsonConvert.SerializeObject(date);
-            await BoradClient.PostAsync($"tasks/{Id}/dates", new StringContent(str, Encoding.UTF8, "application/json"));
+            var res = await BoradClient.PostAsync($"tasks/{Id}/dates", new StringContent(str, Encoding.UTF8, "application/json"));
+            res.EnsureSuccessStatusCode();
         }
-        
+
     }
 
     public class CreateSubtaskResponse

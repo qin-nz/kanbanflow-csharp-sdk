@@ -1,17 +1,18 @@
-<?xml version="1.0"?>
-  <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
-      <id>KanbanFlow.CSharpSDK</id>
-      <version>0.2</version>
-      <title>KanbanFlow.CSharpSDK</title>
-      <authors>qin-nz</authors>
-      <owners>qin-nz</owners>
-      <licenseUrl>https://github.com/qin-nz/kanbanflow-csharp-sdk/blob/master/LICENSE</licenseUrl>
-      <projectUrl>https://github.com/qin-nz/kanbanflow-csharp-sdk</projectUrl>
-      <iconUrl>https://kanbanflow.com/press/download-logo/whitebg_slogan_500x100.png</iconUrl>
-      <requireLicenseAcceptance>false</requireLicenseAcceptance>
-      <description>A third party SDK of https://kanbanflow.com</description>
-      <releaseNotes>Not Finished yet.</releaseNotes>
-      <copyright>Copyright 2015</copyright>
+        <id>KanbanFlow.CSharpSDK</id>
+        <version>0.3.0</version>
+        <title>KanbanFlow.CSharpSDK</title>
+        <authors>qin-nz</authors>
+        <owners>qin-nz</owners>
+        <licenseUrl>https://github.com/qin-nz/kanbanflow-csharp-sdk/blob/master/LICENSE</licenseUrl>
+        <projectUrl>https://github.com/qin-nz/kanbanflow-csharp-sdk</projectUrl>
+        <iconUrl>https://kanbanflow.com/press/download-logo/whitebg_slogan_500x100.png</iconUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>A third party SDK of https://kanbanflow.com</description>
+        <releaseNotes>Not Finished yet.
+Fix bug about date.</releaseNotes>
+        <copyright>Copyright 2015</copyright>
     </metadata>
-  </package>
+</package>
