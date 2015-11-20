@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>KanbanFlow.CSharpSDK</id>
-        <version>0.3.0</version>
+        <version>0.4.0</version>
         <title>KanbanFlow.CSharpSDK</title>
         <authors>qin-nz</authors>
         <owners>qin-nz</owners>
@@ -12,7 +12,7 @@
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>A third party SDK of https://kanbanflow.com</description>
         <releaseNotes>Not Finished yet.
-Fix bug about date.</releaseNotes>
+Now Support Portable.</releaseNotes>
         <copyright>Copyright 2015</copyright>
     </metadata>
 </package>

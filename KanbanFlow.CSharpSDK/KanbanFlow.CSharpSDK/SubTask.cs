@@ -2,7 +2,7 @@
 
 namespace KanbanFlow.CSharpSDK
 {
-    public class SubTask
+    public class Subtask
     {
         [JsonIgnore]
         public Task Parent { get; set; }

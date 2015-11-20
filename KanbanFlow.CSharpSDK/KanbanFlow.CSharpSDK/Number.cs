@@ -3,6 +3,9 @@ using Newtonsoft.Json;
 
 namespace KanbanFlow.CSharpSDK
 {
+    /// <summary>
+    /// Numbering of tasks. You can enable this feature at https://kanbanflow.com/administration/board/(you-board-id)/task-numbering 
+    /// </summary>
     public struct Number
     {
         [DefaultValue("")]

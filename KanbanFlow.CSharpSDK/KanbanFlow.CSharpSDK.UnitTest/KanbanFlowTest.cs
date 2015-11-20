@@ -51,7 +51,7 @@ namespace KanbanFlow.CSharpSDK.UnitTest
         }
 
         [TestMethod]
-        public async void GetSubtask()
+        public async System.Threading.Tasks.Task GetSubtask()
         {
             var subtasks = await _testTask.GetSubtasksAsync();
             Assert.AreEqual("子任务", subtasks[0].Name);
@@ -60,7 +60,9 @@ namespace KanbanFlow.CSharpSDK.UnitTest
         [TestMethod]
         public async System.Threading.Tasks.Task CreateDate()
         {
-            await _testTask.CreateOrUpdateDateAsync(DateTimeOffset.Now.AddDays(1.3), _board.Cells.Last().ColumnId);
+            var task = _testTask.CreateOrUpdateDateAsync(DateTimeOffset.Now.AddDays(1.3), _board.Cells.Last().ColumnId);
+            await task;
+            Assert.IsFalse(task.IsFaulted);
         }
 
         [TestMethod]
@@ -69,24 +71,39 @@ namespace KanbanFlow.CSharpSDK.UnitTest
             var dates = await _testTask.GetDateAsync();
             Assert.IsNotNull(dates);
             Assert.IsTrue(dates.Length > 0);
+            Assert.AreEqual("dueDate", dates[0].DateType);
+            Assert.AreEqual("active", dates[0].Status);
         }
 
         [TestMethod]
         public async System.Threading.Tasks.Task UpdateDate()
         {
-            await _testTask.CreateOrUpdateDateAsync(DateTimeOffset.Now.AddDays(10), _board.Cells.Last().ColumnId);
+            var task = _testTask.CreateOrUpdateDateAsync(DateTimeOffset.Now.AddDays(10), _board.Cells.Last().ColumnId);
+            await task;
+            Assert.IsFalse(task.IsFaulted);
         }
 
         [TestMethod]
         public async System.Threading.Tasks.Task MoveTask()
         {
-            await _board.MoveTaskAsync(_testTask, _board.Cells[3].ColumnId, _board.Cells[0].SwimlaneId);
+            var task = _board.MoveTaskAsync(_testTask, _board.Cells[3].ColumnId, _board.Cells[0].SwimlaneId);
+            await task;
+            Assert.IsFalse(task.IsFaulted);
+        }
+
+        [TestMethod]
+        public async System.Threading.Tasks.Task GetEvents()
+        {
+            var boardevents = await _board.GetEventsAsync(DateTimeOffset.Now.AddMinutes(-1), DateTimeOffset.Now);
+            Assert.IsTrue(boardevents.Count > 0);
         }
 
         [TestMethod]
         public async System.Threading.Tasks.Task DeleteTask()
         {
-            await _board.DeleteTaskAsync(_testTask);
+            var task = _board.DeleteTaskAsync(_testTask);
+            await task;
+            Assert.IsFalse(task.IsFaulted);
         }
     }
 }

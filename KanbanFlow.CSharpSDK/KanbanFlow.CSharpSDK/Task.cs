@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using KanbanFlow.CSharpSDK.Internal;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,21 +49,28 @@ namespace KanbanFlow.CSharpSDK
         public int TotalSecondsSpent { get; set; }
 
 
-        [JsonIgnore]
-        private object Collaborators { get; set; } = new List<object>();
-        [JsonIgnore]
-        private object Comments { get; set; } = new List<object>();
+        public async Task<User[]> GetCollaboratorsAsync()
+        {
+            var content = await BoradClient.GetStringAsync($"tasks/{Id}/collaborators");
+            var users = JsonConvert.DeserializeObject<Collaborator[]>(content);
+            string[] userIds = users.Select(u => u.Id).ToArray();
+            return Board.Users.Where(u => userIds.Contains(u.Id)).ToArray();
+        }
+
+        //public async Task<Comment[]> GetCommentsAsync()
+        //{
+        //}
 
 
-        public async Task<SubTask[]> GetSubtasksAsync()
+        public async Task<Subtask[]> GetSubtasksAsync()
         {
             var content = await BoradClient.GetStringAsync($"tasks/{Id}/subtasks");
-            return JsonConvert.DeserializeObject<SubTask[]>(content);
+            return JsonConvert.DeserializeObject<Subtask[]>(content);
         }
 
         public async System.Threading.Tasks.Task CreateSubtaskAsync(string name, bool finished = false)
         {
-            SubTask subtask = new SubTask
+            Subtask subtask = new Subtask
             {
                 Parent = this,
                 Name = name,
@@ -120,6 +128,15 @@ namespace KanbanFlow.CSharpSDK
             res.EnsureSuccessStatusCode();
         }
 
+        public async System.Threading.Tasks.Task DeleteCollaborator(string collaboratorsId)
+        {
+            await BoradClient.DeleteAsync($"tasks/{Id}/collaborators/by-user-id/{collaboratorsId}");
+        }
+
+        public async System.Threading.Tasks.Task DeleteComment(string commentId)
+        {
+            await BoradClient.DeleteAsync($"tasks/{Id}/comments/{commentId}");
+        }
     }
 
     public class CreateSubtaskResponse

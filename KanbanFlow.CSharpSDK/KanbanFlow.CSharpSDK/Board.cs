@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
+using System.Collections;
 using System.Threading.Tasks;
 using KanbanFlow.CSharpSDK.Internal;
 using Newtonsoft.Json;
@@ -21,11 +22,28 @@ namespace KanbanFlow.CSharpSDK
 
         public string Id { get; internal set; }
         public string Name { get; internal set; }
+
+        /// <summary>
+        /// Get Users Who can access the board.
+        /// </summary>
         public User[] Users { get; internal set; }
+
+        /// <summary>
+        /// Get Cells of the board. Cell equals to Column if you disable swimeline. Otherwise cell means a cross point for a column and a swimline.
+        /// </summary>
         public Cell[] Cells { get; internal set; }
+
+        /// <summary>
+        /// Get columns Id
+        /// </summary>
+        public string[] ColumnsId => Cells.Select(c => c.ColumnId).Distinct().ToArray();
 
         public async Task<Task> CreateTaskAsync(Task task)
         {
+            if (task.ColumnId == null)
+            {
+                task.ColumnId = ColumnsId[0];
+            }
             Cell currentCell = Cells.FirstOrDefault(c => c.ColumnId == task.ColumnId && c.SwimlaneId == task.SwimlaneId);
             if (currentCell == null)
             {
@@ -83,6 +101,16 @@ namespace KanbanFlow.CSharpSDK
             cell?.Tasks.Remove(task);
         }
 
+        public async Task<BoardEventCollection> GetEventsAsync(DateTimeOffset from, DateTimeOffset to)
+        {
+            var str = await _client.GetStringAsync($"board/events?from={from.ToUniversalTime().ToString("yyyy-MM-ddThh:mm:ssZ")}&to={to.ToUniversalTime().ToString("yyyy-MM-ddThh:mm:ssZ")}");
+            return JsonConvert.DeserializeObject<BoardEventCollection>(str);
+        }
+
+        /// <summary>
+        /// Get all tasks from kanbanflow.com and update <c>Cells</c> property.
+        /// </summary>
+        /// <returns></returns>
         public async System.Threading.Tasks.Task RefreshTasks()
         {
             var cells = await _client.GetAllTasks(this);
